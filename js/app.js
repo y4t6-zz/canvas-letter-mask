@@ -3,6 +3,7 @@ window.onload = function()  {
   var ctx = canvas.getContext('2d');
   var letterScale = 1;
   var mousePos;
+  var originPosX = 1;
   var mousePosX = 0;
   var mousePosY = 0;
 
@@ -19,8 +20,13 @@ window.onload = function()  {
 
   document.body.addEventListener('mousemove', function(evt) {
     mousePos = getMousePos(canvas, evt);
-    mousePosX = mousePos.x - 200;
-    mousePosY = mousePos.y - 200;
+    if ( evt.target.getAttribute('id') == 'canvas' && mousePos.x > 10 ) {
+      var vector = mousePos.x - originPosX;
+      var damping = vector/200;
+      if (vector > -200 && vector < 200) {
+        changingPosX = mousePos.x - damping*80;
+      } 
+    }
   }, false);
 
   window.onresize = function(event) {
@@ -29,11 +35,12 @@ window.onload = function()  {
     canvasSize = getCanvasSize(canvas);
     imageSize = getImageSize(originImage);
     
+    changingPosX = getLetterPosX();
+
     letterScale = canvasSize.height / 100;
     drawImage( doesAlignByHeight(canvas, originImage) ); 
     ctx.save();
     drawLetter();
-    ctx.filter = 'blur(2px)';
     ctx.clip();
     drawImage( doesAlignByHeight(canvas, originImage), 90, scaledImage); 
 
@@ -53,7 +60,7 @@ window.onload = function()  {
     drawImage( doesAlignByHeight(canvas, originImage) ); 
     ctx.save();
     drawLetter();
-    ctx.filter = 'blur(2px)';
+    //ctx.filter = 'blur(2px)';
     ctx.clip();
     drawImage( doesAlignByHeight(canvas, originImage), 90, scaledImage ); 
 
@@ -115,10 +122,19 @@ window.onload = function()  {
       ctx.drawImage(scaledImage || originImage, dx, dy, newWidth, newHeight);
     }
   }
+  function getLetterPosX() {
+    return canvasSize.width * 3 / 10;
+  }
+  originPosX = getLetterPosX();
+  
+  var changingPosX = originPosX;
+
   function drawLetter() {
     var scale = letterScale;
-    var posX = mousePosX || 450;
-    var posY = mousePosY || 0;
+    var posX = changingPosX;
+    
+    //var posY = mousePosY || 0;
+    var posY = 0;
     letterScale = canvasSize.height / 100;
 
     ctx.beginPath();
