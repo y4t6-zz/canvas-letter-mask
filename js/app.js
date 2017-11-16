@@ -1,13 +1,17 @@
 window.onload = function()  {
   var canvas = document.querySelector('#canvas');
-  canvas.setAttribute('width', document.body.clientWidth);
-  canvas.setAttribute('height', window.innerHeight);
   var ctx = canvas.getContext('2d');
+  var letterScale = 1;
   var mousePos;
   var mousePosX = 0;
   var mousePosY = 0;
+
   var originImage = document.querySelector('#originImageHorizontal');
-  //var originImage = document.querySelector('#originImageVertical');
+  var scaledImage = document.querySelector('#imageScaled');
+ 
+  canvas.setAttribute('width', document.body.clientWidth);
+  canvas.setAttribute('height', window.innerHeight);
+
   var canvasSize = getCanvasSize(canvas);
   var imageSize = getImageSize(originImage);
 
@@ -24,6 +28,16 @@ window.onload = function()  {
     canvas.setAttribute('height', window.innerHeight);   
     canvasSize = getCanvasSize(canvas);
     imageSize = getImageSize(originImage);
+    
+    letterScale = canvasSize.height / 100;
+    drawImage( doesAlignByHeight(canvas, originImage) ); 
+    ctx.save();
+    drawLetter();
+    ctx.filter = 'blur(2px)';
+    ctx.clip();
+    drawImage( doesAlignByHeight(canvas, originImage), 90, scaledImage); 
+
+    ctx.restore();
   };
   
   function getMousePos(canvas, evt) {
@@ -39,9 +53,9 @@ window.onload = function()  {
     drawImage( doesAlignByHeight(canvas, originImage) ); 
     ctx.save();
     drawLetter();
-    ctx.filter = 'blur(1px)';
+    ctx.filter = 'blur(2px)';
     ctx.clip();
-    drawImage( doesAlignByHeight(canvas, originImage), 30 ); 
+    drawImage( doesAlignByHeight(canvas, originImage), 90, scaledImage ); 
 
     ctx.restore();
   }
@@ -62,7 +76,7 @@ window.onload = function()  {
       true :      
       false; 
   }
-  function drawImage(doesAlignByHeight, scale) {
+  function drawImage(doesAlignByHeight, scale, scaledImage) {
     if (doesAlignByHeight) {
       var newHeight = canvasSize.height;
       var newWidth = newHeight * imageSize.width / imageSize.height;
@@ -72,7 +86,7 @@ window.onload = function()  {
       if(scale) {
         scaleAndDrawImage(newWidth, newHeight)
       } else {
-        ctx.drawImage(originImage, posX, posY, newWidth, newHeight);
+        ctx.drawImage(scaledImage || originImage, posX, posY, newWidth, newHeight);
       }
        
     } else {
@@ -84,7 +98,7 @@ window.onload = function()  {
       if(scale) {
         scaleAndDrawImage(newWidth, newHeight)
       } else {
-        ctx.drawImage(originImage, posX, posY, newWidth, newHeight);
+        ctx.drawImage(scaledImage || originImage, posX, posY, newWidth, newHeight);
       }
     }
 
@@ -98,29 +112,35 @@ window.onload = function()  {
       } else {
         var dy = posY - (newHeight - height);
       }
-      ctx.drawImage(originImage, dx, dy, newWidth, newHeight);
+      ctx.drawImage(scaledImage || originImage, dx, dy, newWidth, newHeight);
     }
   }
   function drawLetter() {
-    var scale = 3;
-    var posX = mousePosX || 200;
-    var posY = mousePosY || 100;
-    
+    var scale = letterScale;
+    var posX = mousePosX || 450;
+    var posY = mousePosY || 0;
+    letterScale = canvasSize.height / 100;
+
     ctx.beginPath();
-    ctx.moveTo(0 + posX, 0 + posY);
-    ctx.lineTo(0 + posX, 400 + posY);
-    ctx.lineTo(50 + posX, 400 + posY);
-    ctx.lineTo(50 + posX, 200 + posY);
-    ctx.lineTo(100 + posX, 200 + posY);
-    ctx.quadraticCurveTo(200 + posX, 200 + posY, 200 + posX, 100 + posY);
-    ctx.quadraticCurveTo(200 + posX, 0 + posY, 100 + posX, 0 + posY);
-    ctx.lineTo(50 + posX, 0 + posY);
-    ctx.lineTo(50 + posX, 50 + posY);
-    ctx.lineTo(100 + posX, 50 + posY);
-    ctx.quadraticCurveTo(150 + posX, 50 + posY, 150 + posX, 100 + posY);
-    ctx.quadraticCurveTo(150 + posX, 150 + posY, 100 + posX, 150 + posY);
-    ctx.lineTo(50 + posX, 150 + posY);
-    ctx.lineTo(50 + posX, 0 + posY);
-    ctx.lineTo(0 + posX, 0 + posY);
+    ctx.moveTo(0*scale + posX, 3.4*scale + posY);
+    ctx.lineTo(0*scale + posX, 100*scale + posY);
+    ctx.lineTo(16.5*scale + posX, 100*scale + posY);
+    ctx.lineTo(16.5*scale + posX, 3*scale + posY);
+    ctx.lineTo(30.2*scale + posX, 3*scale + posY);
+    ctx.quadraticCurveTo(52*scale + posX, 3*scale + posY, 56*scale + posX, 24*scale + posY);
+    ctx.quadraticCurveTo(57*scale + posX, 28*scale + posY, 56*scale + posX, 37*scale + posY);
+    ctx.quadraticCurveTo(52*scale + posX, 56*scale + posY, 34*scale + posX, 57*scale + posY);
+    ctx.lineTo(19*scale + posX, 57*scale + posY);
+    ctx.lineTo(19*scale + posX, 58*scale + posY);
+    ctx.lineTo(21*scale + posX, 60*scale + posY);
+    ctx.lineTo(34*scale + posX, 60*scale + posY);
+    ctx.quadraticCurveTo(66*scale + posX, 60*scale + posY, 72*scale + posX, 39*scale + posY);
+    ctx.quadraticCurveTo(74*scale + posX, 30*scale + posY, 72.8*scale + posX, 24*scale + posY);
+    ctx.quadraticCurveTo(68*scale + posX, 2*scale + posY, 35*scale + posX, 0*scale + posY);
+    ctx.lineTo(-9.8*scale + posX, 0*scale + posY);
+    ctx.lineTo(-9.8*scale + posX, 1*scale + posY);
+    ctx.lineTo(0*scale + posX, 3.4*scale + posY);
+
+    //ctx.stroke();
   }
 }
