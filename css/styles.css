@@ -1,0 +1,11 @@
+body {
+  margin: 0;
+}
+
+canvas {
+overflow: hidden;
+box-sizing: border-box;
+}
+.canvasWrap {
+  overflow: hidden;
+}
